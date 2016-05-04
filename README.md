@@ -70,5 +70,14 @@ pydmap will raise `DmapDataError` on failure. There are many places where the pa
 ##Testing
 There are a set of basic unit tests if you make changes. These tests affirm that the package can open and parse common file types. It tests writing capabilites by encoding some data, writing it out, and then trying to parse it again. There is also a randomized test to test error handling of the parsing routines. This test takes a valid DMAP record and randomly corrupts 5% of the data to see if the parser throws any unhandled exceptions.
 
+##Unimplemented or untested features
+I have not tested recursive DMAP records. I'm not aware of any files that use DMAP records within records.
+
+Differing byte endianess. I'm not aware of any files that were written using differing byte endianess. If this is an issue, it can be added
+
+I have not full tested the backwards compatibility of all pydmap written files using the C data analysis programs. The few files I tested did work, but their may be some edge cases
+
+
+
 
 
