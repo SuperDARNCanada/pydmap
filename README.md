@@ -45,7 +45,7 @@ or if working on data from a buffer(such as data from a network socket) then use
 parse_dmap_format_from_stream(stream, raw_dmap=False)
 ```
 
-Both of these functions return a list of dictionaries that hold the data for each parsed DMAP record, or if raw_dmap is set True then it returns the underlying Raw_Dmap object that holds data while it is being parsed. Note that arrays are parsed using Numpy for speed and are of `numpy.ndarray` type.
+Both of these functions return a list of dictionaries that hold the data for each parsed DMAP record, or if `raw_dmap` is set `True` then it returns the underlying Raw_Dmap object that holds data while it is being parsed. Note that arrays are parsed using Numpy for speed and are of `numpy.ndarray` type.
 
 ##Encoding and writing data
 
