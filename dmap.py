@@ -279,7 +279,7 @@ class RawDmapRead(object):
 			message = "PARSE RECORD: Integrity check shows record size bigger than remaining buffer. Data is likely corrupted"
 			raise DmapDataError(message)
 		elif size <= 0:
-		 	message = "PARSE RECORD: Integrity check shows record size <= 0. Data is likely corrupted"
+			message = "PARSE RECORD: Integrity check shows record size <= 0. Data is likely corrupted"
 			raise DmapDataError(message)
 		
 		num_scalers = self.read_data('i')
@@ -397,7 +397,10 @@ class RawDmapRead(object):
 			with open("logfile.txt",'a') as f:
 				f.write("PARSE ARRAY: dimensions {0}\n".format(dimensions))
 
-		total_elements = reduce(lambda x,y: x*y,dimensions)
+		#total_elements = reduce(lambda x,y: x*y,dimensions)
+		total_elements = 1
+		for dim in dimensions:
+			total_elements = total_elements * dim
 
 		if total_elements > record_size:
 			message = """PARSE_ARRAY: Total array elements > record size."""
