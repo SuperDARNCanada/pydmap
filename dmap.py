@@ -18,6 +18,7 @@ import struct
 import time
 import gc
 import numpy as np
+import sys
 
 DMAP = 0
 CHAR = 1
@@ -421,7 +422,6 @@ class RawDmapRead(object):
 			data_array = self.build_n_dimension_list(dimensions,data_type_fmt)
 		else:
 			data_array = self.read_numerical_array(data_type_fmt,dimensions,record_size,total_elements)
-
 		return RawDmapArray(name,data_type,data_type_fmt,mode,array_dimension,dimensions,data_array)
 
 
@@ -501,7 +501,6 @@ class RawDmapRead(object):
 		
 		try:
 			array = np.frombuffer(buf,dtype=data_type_fmt)
-
 		except ValueError as v:
 			message = "READ_NUMERICAL_ARRAY: Array buffer in not multiple of data size. Likely due to corrupted array parameters in record"
 
@@ -582,6 +581,7 @@ class RawDmapWrite(object):
 		lists are converted to numpy arrays for fast and efficient convertion to bytes"""
 		record = RawDmapRecord()
 		for k,v in data_dict.iteritems():
+
 			if k in self.ud_types:
 				data_type_fmt = self.ud_types[k]
 			else:
@@ -599,11 +599,17 @@ class RawDmapWrite(object):
 						data = np.asarray(v,dtype=object)
 					else:
 						data = np.asarray(v,dtype=data_type_fmt)
-				else:
-					data = v
+				if isinstance(v,np.ndarray):
+					if data_type_fmt == 'c' and v.dtype != 'S1':
+						data = np.asarray([chr(x) for x in v],dtype='c')
+					# elif data_type_fmt == 's':
+					# 	data = np.asarray(v,dtype=object)
+					else:
+						data = np.asarray(v,dtype=data_type_fmt)					
 
 				dmap_type = self.convert_fmt_to_dmap_type(data_type_fmt)
-				arr_dimensions = data.shape
+				#dimensions need to be reversed to match what dmap expects
+				arr_dimensions = data.shape[::-1]
 				dimension = len(arr_dimensions)
 				array = RawDmapArray(k,dmap_type,data_type_fmt,mode,dimension,arr_dimensions,data)
 				record.add_array(array)
@@ -641,6 +647,7 @@ class RawDmapWrite(object):
 		for ar in arrays:
 			byte_arr.extend(self.dmap_array_to_bytes(ar))
 
+		# + 16 for length,code,num scalers, and num arrays fields
 		length = len(byte_arr) + 16
 		#print(length)
 
@@ -698,7 +705,11 @@ class RawDmapWrite(object):
 		for dim in array.get_arr_dimensions():
 			arr_dimensions_bytes = arr_dimensions_bytes + struct.pack('i',dim)
 
-		data_bytes = array.get_data().tostring()
+		#array must be transposed in order to correctly be read by dmap readers
+		# data_transposed = array.get_data().T
+		# if array.get_name() == 'ltab':
+		# 	print data_transposed
+		data_bytes = array.get_data().tobytes()
 
 		total_bytes = name_bytes + dmap_type_bytes + dimension_bytes + arr_dimensions_bytes + data_bytes
 		return total_bytes
