@@ -1,4 +1,14 @@
 # pydmap
+
+
+######################################################################################
+              THIS IS NOW DEPRECATED AND MOVED TO THE BACKSCATTER REPO
+              PLEASE USE BACKSCATTER TO READ/WRITE YOUR FILES
+######################################################################################
+
+
+
+
 Python based library for reading and writing SuperDARN data in the dmap format
 
 
